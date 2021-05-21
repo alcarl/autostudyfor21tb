@@ -54,8 +54,8 @@ def checktime():
                 EC.presence_of_element_located((By.XPATH,"//span[@class='cl-head-tip']/time[2]"))
             )
             nowtime=int(element.text)
-            print ("需观看%d 分钟，已学习 %d 分钟 。" %(mintime,nowtime)).encode("gb18030")
-            if(mintime-nowtime-count)>0 :
+            print ("需观看%d 分钟，已学习 %d 分钟 。\r" %(mintime,nowtime)).encode("gb18030")
+            if(mintime-nowtime)>0 :
                 time.sleep(60)
                 count=count+1
             else:
@@ -75,8 +75,10 @@ def checktime():
                 if ("done" in icon) :
                     print "学完了".encode("gb18030")
                     break
-            except:
-                pass
+            except Exception, err:
+                errmsg=traceback.format_exc()
+                print '查找课程状态标志异常: '.encode("gb18030"),errmsg.encode("gb18030")
+                break
         return;
     except Exception, e:
         errmsg=traceback.format_exc()
