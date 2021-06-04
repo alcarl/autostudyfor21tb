@@ -15,12 +15,45 @@ import re
 import os
 
 import random
+from configparser import ConfigParser
 
 runHourMin=9
 runHourMax=22
+global loginUserName
+global loginPassWord
+global classListUrl
 loginUserName=""
 loginPassWord=""
 classListUrl=""
+
+def getConfig():
+    global loginUserName
+    global loginPassWord
+    global classListUrl
+
+    try:
+        config = ConfigParser()
+        config.read('config.ini', encoding='UTF-8')
+        try:
+            loginUserName=config.get('config', 'loginUserName')
+        except Exception, err:
+            errmsg=traceback.format_exc()
+            print '读取config文件loginUserName异常: '.encode("gb18030"),errmsg.encode("gb18030")
+        try:
+            loginPassWord=config.get('config', 'loginPassWord')
+        except Exception, err:
+            errmsg=traceback.format_exc()
+            print '读取config文件loginPassWord异常: '.encode("gb18030"),errmsg.encode("gb18030")
+        try:
+            classListUrl=config.get('config', 'classListUrl')
+        except Exception, err:
+            errmsg=traceback.format_exc()
+            print '读取config文件classListUrl异常: '.encode("gb18030"),errmsg.encode("gb18030")
+    except Exception, err:
+        errmsg=traceback.format_exc()
+        print '读取config文件异常: '.encode("gb18030"),errmsg.encode("gb18030")
+
+    
 
 def checkNowTime():
     hour=time.localtime().tm_hour
@@ -124,7 +157,7 @@ reload(sys) # Python2.5 初始化后会删除 sys.setdefaultencoding 这个方�
 sys.setdefaultencoding('utf-8')   
 
 checkNowTime();
-
+getConfig();
 
 
 if classListUrl=="":
