@@ -99,8 +99,8 @@ def checktime():
         while(True):
             time.sleep(60)
             count=count+1
-            if(count>5):
-                print "在符合时间要求后已经多等了5分钟仍然没有学完。跳出".encode("gb18030")
+            if(count>2):
+                print "在符合时间要求后已经多等了2分钟仍然没有学完。跳出".encode("gb18030")
                 break
             #判断该章节是否已经学完（检查是否有对钩图标）
             try:
@@ -130,7 +130,7 @@ def checktime():
     #循环等待符合时间要求
     time.sleep(stepSleepSecond)
     while(currenttime.text!=duration.text):
-        print ("视频播放中"+currenttime.text+"/"+duration+"\r").encode("gb18030"),
+        print ("视频播放中"+currenttime.text+"/"+duration.text+"\r").encode("gb18030"),
         time.sleep(1)
         count=count+1
     print "视频已播放完。".encode("gb18030")
@@ -204,6 +204,9 @@ except:
     pass
 
 options = webdriver.ChromeOptions()
+# 此步骤很重要，设置为开发者模式，防止被各大网站识别出来使用了Selenium
+#options.add_experimental_option('excludeSwitches', ['enable-logging'])#禁止打印日志
+options.add_experimental_option('excludeSwitches', ['enable-automation'])#跟上面只能选一个
 #options.add_argument('lang=zh_CN.UTF-8')
 options.add_argument("--user-data-dir=./ChromeUserData/aaa")
 options.add_argument("start-maximized"); # open Browser in maximized mode
@@ -223,8 +226,13 @@ options.add_argument('--ignore-certificate-errors')   #处理报错问题  ERROR
 options.add_argument('--ignore-certificate-errors-spki-list')
 options.add_argument('--ignore-ssl-errors')
 
-browser = webdriver.Chrome(chrome_options = options)
+#options.add_argument('--incognito')#无痕隐身模式
+#options.add_argument("disable-cache")#禁用缓存
+options.add_argument('log-level=3')#INFO = 0 WARNING = 1 LOG_ERROR = 2 LOG_FATAL = 3 default is 0
 
+
+browser = webdriver.Chrome(chrome_options = options)
+browser.maximize_window() ##防止窗口小某些页面元素不显示，导致操作时报错elementNotInteractableException
 time.sleep(5)
 browser.get(classListUrl)
 #browser.get("https://eln.so/u0rNE01zS")
@@ -323,7 +331,8 @@ for kc in kclist:
     try:
         browser.switch_to_window(courseListWindowHandle)
         time.sleep(stepSleepSecond)
-
+        
+        kc.location_once_scrolled_into_view # 元素不显示时无法正常操作 ElementNotInteractableException ，滚动到显示区域
         kc_name=kc.text
         print "开始学习课程：".encode('gb18030'),kc_name.encode('gb18030')
         #点击课程，进入课程页面
